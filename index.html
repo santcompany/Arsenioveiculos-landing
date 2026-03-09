@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arsênio Veículos — Compra, Venda, Troca e Financia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Anton&family=Barlow+Condensed:ital,wght@0,400;0,700;0,900;1,700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black:   #0A0A0A;
+  --dark:    #141414;
+  --dark2:   #1C1C1C;
+  --yellow:  #F5D800;
+  --yellow-l:#FFE840;
+  --yellow-d:#C9B000;
+  --white:   #F8F8F8;
+  --gray:    #888;
+  --gray-l:  #BDBDBD;
+  --border:  rgba(245,216,0,0.15);
+}
+
+html { background: #0A0A0A; scroll-behavior: smooth; }
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--black);
+  color: var(--white);
+  overflow-x: hidden;
+  cursor: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ══ CURSOR ══ */
+#cur {
+  position: fixed; z-index: 9999; pointer-events: none;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--yellow);
+  transform: translate(-50%,-50%);
+  transition: width .2s, height .2s;
+}
+#cur-ring {
+  position: fixed; z-index: 9998; pointer-events: none;
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1.5px solid rgba(245,216,0,.5);
+  transform: translate(-50%,-50%);
+  transition: left .12s ease, top .12s ease, width .3s, height .3s;
+}
+body.hov #cur { width: 14px; height: 14px; background: var(--yellow-l); }
+body.hov #cur-ring { width: 54px; height: 54px; border-color: var(--yellow); }
+
+/* ══ GRAIN ══ */
+#grain {
+  position: fixed; inset: 0; z-index: 1; pointer-events: none; opacity: .035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px;
+}
+
+/* ══ NAV ══ */
+nav {
+  position: fixed; top: 0; width: 100%; z-index: 200;
+  height: 62px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 60px;
+  background: rgba(10,10,10,.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(245,216,0,.1);
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
+.nav-logo-badge {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--yellow);
+  display: flex; align-items: center; justify-content: center;
+}
+.nav-logo-badge svg { width: 20px; height: 20px; }
+.nav-logo-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: 2px;
+  line-height: 1;
+}
+.nav-logo-name .top { color: var(--white); display: block; }
+.nav-logo-name .bot { color: var(--yellow); display: block; font-size: 12px; letter-spacing: 3px; }
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a {
+  font-size: 11px; font-weight: 400; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gray); text-decoration: none; transition: color .2s; cursor: none;
+}
+.nav-links a:hover { color: var(--yellow); }
+.nav-cta {
+  background: var(--yellow); color: var(--black);
+  padding: 10px 26px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px; letter-spacing: 2px;
+  cursor: none; text-decoration: none;
+  transition: all .2s; display: inline-block;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+}
+.nav-cta:hover { background: var(--yellow-l); transform: translateY(-1px); box-shadow: 0 6px 24px rgba(245,216,0,.3); }
+
+/* ══ HERO ══ */
+.hero {
+  min-height: 100vh;
+  background: var(--black);
+  position: relative; overflow: hidden;
+  display: flex; align-items: center;
+  padding: 80px 60px 60px;
+  gap: 60px;
+}
+
+/* Yellow diagonal accent */
+.hero-accent {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  width: 44%;
+  background: var(--dark);
+  clip-path: polygon(16% 0, 100% 0, 100% 100%, 0% 100%);
+}
+.hero-accent::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    -60deg, transparent 0, transparent 28px,
+    rgba(245,216,0,.03) 28px, rgba(245,216,0,.03) 29px
+  );
+}
+/* Yellow top stripe */
+.hero-stripe {
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--yellow), var(--yellow-l), var(--yellow));
+}
+/* Glow */
+.hero-glow {
+  position: absolute; bottom: -20%; left: -10%;
+  width: 700px; height: 500px;
+  background: radial-gradient(ellipse, rgba(245,216,0,.1) 0%, transparent 65%);
+  pointer-events: none;
+  animation: glowB 6s ease-in-out infinite;
+}
+@keyframes glowB { 0%,100%{opacity:.6} 50%{opacity:1} }
+
+/* Background word */
+.hero-bg-word {
+  position: absolute; bottom: -8%; right: -1%;
+  font-family: 'Anton', sans-serif;
+  font-size: 24vw; letter-spacing: -4px;
+  color: rgba(245,216,0,.03);
+  pointer-events: none; user-select: none; line-height: 1; z-index: 0;
+}
+
+.hero-left { position: relative; z-index: 2; max-width: 560px; }
+.hero-right { position: relative; z-index: 2; flex: 1; display: flex; justify-content: center; }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(245,216,0,.12);
+  border: 1px solid rgba(245,216,0,.3);
+  padding: 5px 16px; margin-bottom: 20px;
+  font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--yellow);
+  animation: fadeUp .5s ease .1s both;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--yellow);
+  animation: bdot 2s ease-in-out infinite;
+}
+@keyframes bdot { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(60px, 9vw, 110px);
+  line-height: .9; letter-spacing: 1px; text-transform: uppercase;
+  margin-bottom: 20px;
+  animation: fadeUp .6s ease .2s both;
+}
+.hero-title .yw { color: var(--yellow); }
+.hero-title .out {
+  -webkit-text-stroke: 1.5px rgba(255,255,255,.18);
+  color: transparent; display: block;
+}
+
+.hero-sub {
+  font-size: 15px; font-weight: 300; line-height: 1.8;
+  color: var(--gray-l); max-width: 420px; margin-bottom: 32px;
+  animation: fadeUp .6s ease .35s both;
+}
+.hero-sub strong { color: var(--white); font-weight: 500; }
+
+/* Services pills */
+.hero-services {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px;
+  animation: fadeUp .6s ease .45s both;
+}
+.svc-pill {
+  background: rgba(245,216,0,.1);
+  border: 1px solid rgba(245,216,0,.2);
+  padding: 6px 16px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px; letter-spacing: 2px;
+  color: var(--yellow);
+}
+
+.hero-actions {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  animation: fadeUp .6s ease .55s both;
+}
+.btn-yellow {
+  background: var(--yellow); color: var(--black);
+  padding: 15px 36px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 2px;
+  cursor: none; text-decoration: none;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: all .2s; display: inline-block; font-weight: 400;
+}
+.btn-yellow:hover { background: var(--yellow-l); transform: translateY(-2px); box-shadow: 0 12px 32px rgba(245,216,0,.3); }
+.btn-outline-y {
+  background: transparent;
+  border: 2px solid rgba(245,216,0,.25);
+  color: var(--gray-l);
+  padding: 13px 28px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; letter-spacing: 2px;
+  text-decoration: none; cursor: none;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: all .2s; display: inline-block;
+}
+.btn-outline-y:hover { border-color: var(--yellow); color: var(--yellow); }
+
+.hero-stats {
+  display: flex; gap: 32px;
+  margin-top: 44px; padding-top: 28px;
+  border-top: 1px solid rgba(245,216,0,.08);
+  animation: fadeUp .6s ease .7s both; flex-wrap: wrap;
+}
+.hs-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 38px; line-height: 1; letter-spacing: -1px;
+  color: var(--yellow);
+}
+.hs-lbl { font-size: 11px; font-weight: 300; color: var(--gray); margin-top: 2px; letter-spacing: .5px; }
+
+/* Hero right — arch visual */
+.arch-card {
+  background: var(--dark2);
+  border: 1px solid rgba(245,216,0,.12);
+  padding: 32px 28px;
+  position: relative; overflow: hidden;
+  max-width: 380px; width: 100%;
+  animation: fadeUp .7s ease .3s both;
+}
+.arch-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+}
+.arch-tag {
+  font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--yellow); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 6px;
+}
+.arch-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--yellow); }
+
+/* Arch SVG */
+.arch-svg { width: 100%; height: auto; display: block; margin-bottom: 20px; }
+
+.arch-info {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+  background: rgba(245,216,0,.06);
+}
+.ai-box { background: var(--dark); padding: 14px 16px; }
+.ai-lbl { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gray); margin-bottom: 3px; }
+.ai-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 15px; letter-spacing: 1px; color: var(--white);
+}
+.ai-val.yw { color: var(--yellow); font-size: 17px; }
+
+/* ══ TICKER ══ */
+.ticker { background: var(--yellow); padding: 11px 0; overflow: hidden; }
+.ticker-track {
+  display: flex; animation: tick 22s linear infinite; width: max-content;
+}
+.ticker-item {
+  display: flex; align-items: center; gap: 14px; padding: 0 28px;
+  white-space: nowrap;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 17px; letter-spacing: 2.5px; color: var(--black);
+}
+.tk-sep { opacity: .3; font-size: 20px; }
+@keyframes tick { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* ══ SERVIÇOS ══ */
+.servicos {
+  padding: 100px 60px;
+  background: var(--dark);
+  position: relative; overflow: hidden;
+}
+.servicos::after {
+  content: 'ARSÊNIO';
+  position: absolute; right: -2%; bottom: -10%;
+  font-family: 'Anton', sans-serif;
+  font-size: 18vw; letter-spacing: -4px;
+  color: rgba(245,216,0,.02);
+  pointer-events: none; user-select: none; line-height: 1;
+}
+.sec-eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--yellow); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-eyebrow::before { content: ''; width: 24px; height: 2px; background: var(--yellow); }
+.sec-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(36px, 4.5vw, 60px);
+  letter-spacing: 1px; line-height: .95; text-transform: uppercase;
+  color: var(--white); margin-bottom: 14px;
+}
+.sec-title .yw { color: var(--yellow); }
+
+.srv-grid {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+  background: rgba(245,216,0,.06);
+  margin-top: 52px;
+}
+.srv-item {
+  background: var(--dark); padding: 36px 28px;
+  position: relative; overflow: hidden;
+  transition: background .25s; cursor: none;
+}
+.srv-item:hover { background: #202020; }
+.srv-item::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: var(--yellow); transform: scaleX(0); transform-origin: left;
+  transition: transform .35s ease;
+}
+.srv-item:hover::after { transform: scaleX(1); }
+.srv-icon { font-size: 32px; margin-bottom: 16px; }
+.srv-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px; letter-spacing: 1px;
+  color: var(--white); margin-bottom: 8px;
+}
+.srv-desc { font-size: 13px; font-weight: 300; line-height: 1.7; color: var(--gray); }
+
+/* ══ SIMULADOR DE TROCA ══ */
+.simulador {
+  padding: 100px 60px;
+  background: var(--black);
+}
+.sim-header { margin-bottom: 52px; }
+
+.sim-engine {
+  background: var(--dark2);
+  border: 1px solid rgba(245,216,0,.1);
+  position: relative; overflow: hidden;
+  max-width: 1000px;
+}
+.sim-engine::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--yellow-d), var(--yellow), var(--yellow-l), var(--yellow));
+}
+
+.sim-body {
+  padding: 40px 44px 0;
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 0;
+}
+.sim-col {
+  padding: 0 32px 36px 0;
+  border-right: 1px solid rgba(245,216,0,.06);
+}
+.sim-col:last-child { border: none; padding-right: 0; padding-left: 32px; }
+.sim-col:nth-child(2) { padding-left: 32px; }
+
+.sc-label {
+  font-size: 9px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--yellow); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 7px;
+}
+.sc-step {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(245,216,0,.15);
+  border: 1px solid rgba(245,216,0,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--yellow); font-weight: 700;
+}
+
+.sc-opts { display: flex; flex-direction: column; gap: 6px; }
+.sc-opt {
+  padding: 9px 14px;
+  background: rgba(255,255,255,.03);
+  border: 1.5px solid transparent;
+  font-size: 13px; font-weight: 400;
+  color: var(--gray-l); cursor: none;
+  transition: all .2s; user-select: none;
+  display: flex; align-items: center; gap: 9px;
+}
+.sc-opt::before {
+  content: '';
+  width: 7px; height: 7px; border-radius: 50%;
+  border: 1.5px solid var(--gray);
+  flex-shrink: 0; transition: all .2s;
+}
+.sc-opt:hover { background: rgba(245,216,0,.06); border-color: rgba(245,216,0,.3); color: var(--white); }
+.sc-opt:hover::before { border-color: var(--yellow); }
+.sc-opt.sel { background: rgba(245,216,0,.1); border-color: var(--yellow); color: var(--white); }
+.sc-opt.sel::before { background: var(--yellow); border-color: var(--yellow); }
+
+/* Result */
+.sim-result {
+  border-top: 1px solid rgba(245,216,0,.07);
+  padding: 32px 44px;
+  min-height: 112px;
+  display: flex; align-items: center;
+}
+.sr-empty {
+  font-size: 14px; font-weight: 300; color: rgba(255,255,255,.2);
+  font-style: italic; width: 100%; text-align: center;
+}
+.sr-filled {
+  display: none; width: 100%;
+  align-items: center; gap: 20px; flex-wrap: wrap;
+  justify-content: space-between;
+}
+.sr-filled.show { display: flex; animation: fadeUp .4s ease both; }
+
+.sr-ico { font-size: 40px; flex-shrink: 0; }
+.sr-info { flex: 1; }
+.sr-tag {
+  font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--yellow); margin-bottom: 4px;
+}
+.sr-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px; letter-spacing: .5px;
+  color: var(--white); line-height: 1.1; margin-bottom: 4px;
+}
+.sr-desc { font-size: 13px; font-weight: 300; color: var(--gray); line-height: 1.5; }
+.sr-val {
+  text-align: right; flex-shrink: 0;
+}
+.sr-range {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px; letter-spacing: -1px; color: var(--yellow); line-height: 1;
+}
+.sr-range-lbl { font-size: 11px; font-weight: 300; color: var(--gray); }
+.sr-cta {
+  background: var(--yellow); color: var(--black);
+  padding: 14px 28px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px; letter-spacing: 2px;
+  text-decoration: none; cursor: none;
+  clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  transition: all .2s; display: inline-block; flex-shrink: 0;
+}
+.sr-cta:hover { background: var(--yellow-l); transform: translateY(-2px); }
+
+/* ══ FEIRÃO / PROVA SOCIAL ══ */
+.feirao {
+  padding: 100px 60px;
+  background: var(--dark);
+  overflow: hidden;
+}
+.feirao-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+  align-items: center; margin-top: 52px;
+}
+.fg-left {}
+.fg-quote {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(32px, 4vw, 54px);
+  line-height: .95; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--white); margin-bottom: 20px;
+}
+.fg-quote .yw { color: var(--yellow); }
+.fg-body {
+  font-size: 15px; font-weight: 300; line-height: 1.8;
+  color: var(--gray); margin-bottom: 28px;
+}
+.fg-body strong { color: var(--white); font-weight: 500; }
+
+.vendas-count {
+  display: flex; align-items: center; gap: 16px;
+  background: rgba(245,216,0,.06);
+  border: 1px solid rgba(245,216,0,.12);
+  padding: 20px 24px; margin-bottom: 28px;
+}
+.vc-icon { font-size: 32px; }
+.vc-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px; line-height: 1; letter-spacing: -1px; color: var(--yellow);
+}
+.vc-lbl { font-size: 12px; font-weight: 300; color: var(--gray); letter-spacing: .5px; }
+
+/* Proof cards grid */
+.fg-right {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.proof-card {
+  background: var(--dark2);
+  border: 1px solid rgba(245,216,0,.06);
+  padding: 22px 20px;
+  transition: border-color .3s; cursor: none;
+  position: relative; overflow: hidden;
+}
+.proof-card:hover { border-color: rgba(245,216,0,.25); }
+.proof-card::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+  background: var(--yellow); transform: scaleY(0); transform-origin: bottom;
+  transition: transform .35s ease;
+}
+.proof-card:hover::before { transform: scaleY(1); }
+.pc-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; letter-spacing: .5px;
+  color: var(--white); margin-bottom: 6px; line-height: 1;
+}
+.pc-desc { font-size: 12px; font-weight: 300; color: var(--gray); line-height: 1.6; }
+.pc-tag {
+  display: inline-block; margin-top: 10px;
+  font-size: 9px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--yellow); border: 1px solid rgba(245,216,0,.2); padding: 3px 10px;
+}
+
+/* ══ DEPOIMENTOS CARROSSEL ══ */
+.depos {
+  padding: 100px 60px;
+  background: var(--black); overflow: hidden;
+}
+.depo-track-wrap { overflow: hidden; margin-top: 44px; }
+.depo-track {
+  display: flex; gap: 16px;
+  animation: depoM 28s linear infinite; width: max-content;
+}
+.depo-track:hover { animation-play-state: paused; }
+@keyframes depoM { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+.depo-card {
+  background: var(--dark2);
+  border: 1px solid rgba(245,216,0,.06);
+  padding: 28px; width: 320px; flex-shrink: 0;
+  position: relative; transition: border-color .3s;
+}
+.depo-card:hover { border-color: rgba(245,216,0,.25); }
+.depo-card::before {
+  content: '"';
+  position: absolute; top: -6px; right: 14px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 70px;
+  color: rgba(245,216,0,.08); line-height: 1;
+}
+.dc-stars { color: var(--yellow); font-size: 13px; letter-spacing: 2px; margin-bottom: 12px; }
+.dc-text { font-size: 13px; font-weight: 300; line-height: 1.75; color: var(--gray-l); font-style: italic; margin-bottom: 18px; }
+.dc-author { display: flex; align-items: center; gap: 8px; }
+.dc-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--yellow); }
+.dc-name { font-size: 12px; font-weight: 500; color: var(--white); }
+.dc-veic { font-size: 11px; font-weight: 300; color: var(--yellow); margin-top: 2px; }
+
+/* ══ CTA FINAL ══ */
+.cta-final {
+  padding: 130px 60px;
+  background: var(--yellow);
+  text-align: center; position: relative; overflow: hidden;
+}
+.cta-final::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    -55deg, transparent 0, transparent 24px,
+    rgba(0,0,0,.05) 24px, rgba(0,0,0,.05) 32px
+  );
+}
+.cta-bg-w {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  font-family: 'Anton', sans-serif; font-size: 32vw; letter-spacing: -6px;
+  color: rgba(0,0,0,.06); pointer-events: none; user-select: none; z-index: 0; white-space: nowrap;
+}
+.cta-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+.cta-tag { font-size: 10px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; color: rgba(0,0,0,.4); margin-bottom: 14px; }
+.cta-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(52px, 8vw, 96px);
+  line-height: .9; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--black); margin-bottom: 18px;
+}
+.cta-sub { font-size: 16px; font-weight: 300; color: rgba(0,0,0,.5); line-height: 1.75; margin-bottom: 44px; }
+.cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-black {
+  background: var(--black); color: var(--yellow);
+  padding: 16px 44px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 19px; letter-spacing: 2px;
+  cursor: none; text-decoration: none;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: all .2s; display: inline-block;
+}
+.btn-black:hover { background: #111; transform: translateY(-2px); box-shadow: 0 12px 36px rgba(0,0,0,.3); }
+.btn-blk-ghost {
+  background: transparent; border: 2px solid rgba(0,0,0,.25); color: rgba(0,0,0,.55);
+  padding: 14px 32px;
+  font-family: 'Bebas Neue', sans-serif; font-size: 19px; letter-spacing: 2px;
+  text-decoration: none; cursor: none;
+  clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+  transition: all .2s; display: inline-block;
+}
+.btn-blk-ghost:hover { border-color: var(--black); color: var(--black); }
+.cta-address {
+  margin-top: 40px; padding-top: 24px;
+  border-top: 1px solid rgba(0,0,0,.1);
+  font-size: 13px; font-weight: 300; color: rgba(0,0,0,.4); line-height: 1.7;
+}
+.cta-address strong { color: rgba(0,0,0,.65); font-weight: 500; }
+
+/* ══ FOOTER ══ */
+footer {
+  background: var(--black);
+  padding: 28px 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(245,216,0,.07);
+  flex-wrap: wrap; gap: 14px;
+}
+.fl {
+  font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px;
+  color: rgba(255,255,255,.25);
+}
+.fl .yw { color: var(--yellow); }
+.fc { font-size: 11px; font-weight: 300; color: var(--gray); }
+.flinks { display: flex; gap: 20px; }
+.flinks a { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,.2); text-decoration: none; transition: color .2s; cursor: none; }
+.flinks a:hover { color: var(--yellow); }
+
+/* ══ REVEAL ══ */
+.rv { opacity: 0; transition: opacity .7s ease, transform .7s ease; }
+.rv.fb { transform: translateY(32px); }
+.rv.fl { transform: translateX(-32px); }
+.rv.fr { transform: translateX(32px); }
+.rv.sc { transform: scale(.95); }
+.rv.v  { opacity: 1; transform: none !important; }
+.rv.d1 { transition-delay: .1s; } .rv.d2 { transition-delay: .2s; }
+.rv.d3 { transition-delay: .3s; } .rv.d4 { transition-delay: .4s; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* ══ RESPONSIVE ══ */
+@media (max-width: 1024px) {
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  .hero { flex-direction: column; padding: 80px 24px 60px; gap: 36px; }
+  .hero-accent { display: none; }
+  .servicos, .simulador, .feirao, .depos, .cta-final { padding: 72px 24px; }
+  .srv-grid { grid-template-columns: 1fr 1fr; }
+  .sim-body { grid-template-columns: 1fr; }
+  .sim-col { border-right: none; border-bottom: 1px solid rgba(245,216,0,.06); padding: 0 0 20px; margin-bottom: 20px; }
+  .sim-col:last-child { border: none; padding-left: 0; }
+  .sim-col:nth-child(2) { padding-left: 0; }
+  .feirao-grid { grid-template-columns: 1fr; gap: 40px; }
+  .sim-body, .sim-result { padding: 28px 24px 0; }
+  .sim-result { padding: 24px; }
+  footer { padding: 24px; flex-direction: column; text-align: center; }
+}
+@media (max-width: 600px) {
+  .hero-title { font-size: clamp(52px, 14vw, 72px); }
+  .hero-actions { flex-direction: column; }
+  .srv-grid { grid-template-columns: 1fr; }
+  .fg-right { grid-template-columns: 1fr; }
+  .cta-btns { flex-direction: column; align-items: center; }
+  .sr-val { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<div id="grain"></div>
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-badge">
+      <svg viewBox="0 0 24 24" fill="var(--black)">
+        <path d="M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h11a2 2 0 012 2v3m-4 12h8a2 2 0 002-2v-8a2 2 0 00-2-2H8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+        <circle cx="7.5" cy="14.5" r="1.5" fill="var(--black)"/>
+        <circle cx="16.5" cy="14.5" r="1.5" fill="var(--black)"/>
+      </svg>
+    </div>
+    <div class="nav-logo-name">
+      <span class="top">Arsênio</span>
+      <span class="bot">Veículos</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#simulador">Simular Troca</a></li>
+    <li><a href="#feirao">Feirão</a></li>
+  </ul>
+  <a href="https://wa.me/5567999536788?text=Olá!%20Vim%20do%20site%20da%20Arsênio%20Veículos%20e%20quero%20saber%20mais" class="nav-cta" target="_blank">Falar no WhatsApp</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-stripe"></div>
+  <div class="hero-accent"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-bg-word">FLEX</div>
+
+  <div class="hero-left">
+    <div class="hero-badge"><div class="hero-badge-dot"></div>Três Lagoas, MS · Compra / Venda / Troca / Financia</div>
+    <h1 class="hero-title">
+      ACELERE NO<br>
+      <span class="yw">CAMINHO</span><br>
+      DOS SEUS<br>
+      <span class="out">SONHOS</span>
+    </h1>
+    <p class="hero-sub">
+      Compra segura, transparência total e <strong>valorização do seu carro na troca</strong>. A Arsênio Veículos é onde os melhores negócios de Três Lagoas acontecem.
+    </p>
+    <div class="hero-services">
+      <div class="svc-pill">Compra</div>
+      <div class="svc-pill">Venda</div>
+      <div class="svc-pill">Troca</div>
+      <div class="svc-pill">Financia</div>
+    </div>
+    <div class="hero-actions">
+      <a href="https://wa.me/5567999536788?text=Olá!%20Quero%20ver%20os%20veículos%20disponíveis%20na%20Arsênio%20Veículos" class="btn-yellow" target="_blank">Ver estoque agora</a>
+      <a href="#simulador" class="btn-outline-y">Simular minha troca</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hs-num">+738</div><div class="hs-lbl">Posts de venda</div></div>
+      <div><div class="hs-num">100%</div><div class="hs-lbl">Transparência</div></div>
+      <div><div class="hs-num">3L</div><div class="hs-lbl">Três Lagoas · MS</div></div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="arch-card">
+      <div class="arch-tag">Feirão Arsênio — ao vivo</div>
+      <!-- Arch SVG inspired by their inflatable arch -->
+      <svg class="arch-svg" viewBox="0 0 340 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Sky bg -->
+        <rect width="340" height="220" fill="#0A0A0A"/>
+        <!-- Ground -->
+        <rect x="0" y="185" width="340" height="35" fill="#111"/>
+        <!-- Arch left pillar -->
+        <rect x="18" y="60" width="38" height="130" rx="4" fill="#1a1a1a" stroke="rgba(245,216,0,0.4)" stroke-width="1.5"/>
+        <!-- Arch right pillar -->
+        <rect x="284" y="60" width="38" height="130" rx="4" fill="#1a1a1a" stroke="rgba(245,216,0,0.4)" stroke-width="1.5"/>
+        <!-- Arch top curved bar -->
+        <path d="M18 62 Q170 10 322 62" stroke="rgba(245,216,0,0.5)" stroke-width="36" fill="none" stroke-linecap="round"/>
+        <path d="M24 62 Q170 16 316 62" stroke="#141414" stroke-width="28" fill="none" stroke-linecap="round"/>
+        <!-- Yellow highlights on arch -->
+        <path d="M18 62 Q170 10 322 62" stroke="rgba(245,216,0,0.15)" stroke-width="34" fill="none" stroke-linecap="round"/>
+        <!-- Logo text on arch -->
+        <text x="170" y="46" text-anchor="middle" fill="#F5D800" font-family="'Bebas Neue', sans-serif" font-size="14" letter-spacing="3">ARSÊNIO VEÍCULOS</text>
+        <text x="170" y="58" text-anchor="middle" fill="rgba(245,216,0,0.5)" font-family="'Barlow', sans-serif" font-size="7" letter-spacing="2">COMPRA · VENDA · TROCA · FINANCIA</text>
+        <!-- Car under arch -->
+        <ellipse cx="170" cy="188" rx="110" ry="8" fill="rgba(0,0,0,0.6)"/>
+        <path d="M88 165 L98 165 L108 148 Q114 140 128 138 L150 136 L190 136 L210 138 Q224 140 230 148 L240 165 L252 165 L254 170 L248 175 L92 175 L84 170 Z" fill="#1C1C1C" stroke="rgba(245,216,0,0.25)" stroke-width="1"/>
+        <path d="M120 140 L128 158 L212 158 L220 140 Z" fill="rgba(245,216,0,0.05)" stroke="rgba(245,216,0,0.15)" stroke-width="1"/>
+        <path d="M98 142 L108 158 L128 158 L120 140 Z" fill="rgba(245,216,0,0.03)"/>
+        <path d="M98 142 Q140 130 170 130 Q200 130 242 142" stroke="#F5D800" stroke-width="2" fill="none" opacity=".4"/>
+        <circle cx="116" cy="175" r="14" fill="#111" stroke="#2a2a2a" stroke-width="1.5"/>
+        <circle cx="116" cy="175" r="9" fill="#161616" stroke="rgba(245,216,0,0.3)" stroke-width="1"/>
+        <circle cx="224" cy="175" r="14" fill="#111" stroke="#2a2a2a" stroke-width="1.5"/>
+        <circle cx="224" cy="175" r="9" fill="#161616" stroke="rgba(245,216,0,0.3)" stroke-width="1"/>
+        <!-- Bow on car -->
+        <path d="M155 136 Q165 124 170 128 Q175 124 185 136" stroke="#CC2020" stroke-width="8" fill="none" stroke-linecap="round" opacity=".8"/>
+        <circle cx="170" cy="130" r="5" fill="#CC2020" opacity=".8"/>
+        <!-- Ambient cars in bg -->
+        <rect x="0" y="155" width="70" height="30" rx="2" fill="#0f0f0f" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+        <rect x="270" y="155" width="70" height="30" rx="2" fill="#0f0f0f" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+        <!-- Balloons -->
+        <circle cx="60" cy="30" r="12" fill="rgba(245,216,0,0.4)" stroke="rgba(245,216,0,0.6)" stroke-width="1"/>
+        <line x1="60" y1="42" x2="60" y2="65" stroke="rgba(245,216,0,0.3)" stroke-width="1"/>
+        <circle cx="280" cy="25" r="10" fill="rgba(245,216,0,0.35)" stroke="rgba(245,216,0,0.5)" stroke-width="1"/>
+        <line x1="280" y1="35" x2="280" y2="60" stroke="rgba(245,216,0,0.25)" stroke-width="1"/>
+      </svg>
+      <div class="arch-info">
+        <div class="ai-box"><div class="ai-lbl">Serviços</div><div class="ai-val">Compra · Venda · Troca</div></div>
+        <div class="ai-box"><div class="ai-lbl">WhatsApp</div><div class="ai-val yw">(67) 99953-6788</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <div class="ticker-item">Compra Segura <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Valorização na Troca <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Financiamento Facilitado <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Três Lagoas · MS <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Feirão Arsênio <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Hoje é proibido perder negócio! <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">@arsenioveiculos <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Compra Segura <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Valorização na Troca <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Financiamento Facilitado <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Três Lagoas · MS <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Feirão Arsênio <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">Hoje é proibido perder negócio! <span class="tk-sep">◆</span></div>
+    <div class="ticker-item">@arsenioveiculos <span class="tk-sep">◆</span></div>
+  </div>
+</div>
+
+<!-- SERVIÇOS -->
+<section class="servicos rv fb" id="servicos">
+  <div class="sec-eyebrow rv fb">O que a Arsênio faz</div>
+  <h2 class="sec-title rv fb d1">4 FORMAS DE <span class="yw">RESOLVER</span><br>SUA VIDA.</h2>
+  <div class="srv-grid">
+    <div class="srv-item rv sc">
+      <div class="srv-icon">💰</div>
+      <div class="srv-title">Compramos seu carro</div>
+      <div class="srv-desc">Avaliamos seu veículo com transparência e pagamos o preço justo. Sem enrolação, sem burocracia.</div>
+    </div>
+    <div class="srv-item rv sc d1">
+      <div class="srv-icon">🚗</div>
+      <div class="srv-title">Vendemos para você</div>
+      <div class="srv-desc">Estoque variado de seminovos e novos com procedência garantida. Seu próximo carro está aqui.</div>
+    </div>
+    <div class="srv-item rv sc d2">
+      <div class="srv-icon">🔄</div>
+      <div class="srv-title">Trocamos com valorização</div>
+      <div class="srv-desc">Damos o maior valor pela sua troca. Você sai com carro novo sem perder no negócio — é o nosso diferencial.</div>
+    </div>
+    <div class="srv-item rv sc d3">
+      <div class="srv-icon">📋</div>
+      <div class="srv-title">Financiamos para você</div>
+      <div class="srv-desc">Facilitamos o financiamento mesmo com nome sujo. Parcelas que cabem no seu bolso, do jeito que você precisa.</div>
+    </div>
+  </div>
+</section>
+
+<!-- SIMULADOR DE TROCA -->
+<section class="simulador rv fb" id="simulador">
+  <div class="sim-header">
+    <div class="sec-eyebrow rv fb">Ferramenta exclusiva</div>
+    <h2 class="sec-title rv fb d1">QUANTO VALE<br><span class="yw">SEU CARRO NA TROCA?</span></h2>
+    <p style="font-size:14px;font-weight:300;color:var(--gray);margin-top:8px;max-width:500px;" class="rv fb d2">
+      Selecione as características do seu veículo e veja uma estimativa de valorização — depois fale direto com nossa equipe.
+    </p>
+  </div>
+
+  <div class="sim-engine rv sc d1">
+    <div class="sim-body">
+      <div class="sim-col">
+        <div class="sc-label"><div class="sc-step">1</div>Categoria</div>
+        <div class="sc-opts" data-step="cat">
+          <div class="sc-opt" data-val="hatch">Hatch / Sedan</div>
+          <div class="sc-opt" data-val="suv">SUV / Crossover</div>
+          <div class="sc-opt" data-val="pickup">Picape</div>
+          <div class="sc-opt" data-val="moto">Moto</div>
+        </div>
+      </div>
+      <div class="sim-col">
+        <div class="sc-label"><div class="sc-step">2</div>Ano do veículo</div>
+        <div class="sc-opts" data-step="ano">
+          <div class="sc-opt" data-val="ate2018">Até 2018</div>
+          <div class="sc-opt" data-val="2019a2021">2019 a 2021</div>
+          <div class="sc-opt" data-val="2022a2023">2022 a 2023</div>
+          <div class="sc-opt" data-val="2024mais">2024 ou mais novo</div>
+        </div>
+      </div>
+      <div class="sim-col">
+        <div class="sc-label"><div class="sc-step">3</div>Estado geral</div>
+        <div class="sc-opts" data-step="estado">
+          <div class="sc-opt" data-val="otimo">Ótimo — sem detalhes</div>
+          <div class="sc-opt" data-val="bom">Bom — pequenos reparos</div>
+          <div class="sc-opt" data-val="regular">Regular — precisa revisão</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sim-result" id="sim-result">
+      <div class="sr-empty" id="sr-empty">← Selecione as características do seu veículo para ver a estimativa</div>
+      <div class="sr-filled" id="sr-filled">
+        <div class="sr-ico" id="sr-ico">🚗</div>
+        <div class="sr-info">
+          <div class="sr-tag">Estimativa de valorização</div>
+          <div class="sr-title" id="sr-title">—</div>
+          <div class="sr-desc" id="sr-desc">—</div>
+        </div>
+        <div class="sr-val">
+          <div class="sr-range" id="sr-range">—</div>
+          <div class="sr-range-lbl">na troca</div>
+        </div>
+        <a class="sr-cta" id="sr-cta" href="#" target="_blank">Confirmar agora →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEIRÃO / PROVA SOCIAL -->
+<section class="feirao rv fb" id="feirao">
+  <div class="feirao-grid">
+    <div class="fg-left">
+      <div class="sec-eyebrow rv fb">Estamos a todo vapor</div>
+      <h2 class="fg-quote rv fb d1">
+        "HOJE É<br>PROIBIDO<br><span class="yw">PERDER NEGÓCIO!"</span>
+      </h2>
+      <p class="fg-body rv fb d2">
+        O Feirão Arsênio é o maior evento de veículos de Três Lagoas. <strong>Preços de feirão, condições especiais e atendimento de gente que entende do assunto.</strong> E quando o cliente chora de alegria com as chaves na mão — aí a gente sabe que fez o trabalho certo.
+      </p>
+      <div class="vendas-count rv fb d2">
+        <div class="vc-icon">🏆</div>
+        <div>
+          <div class="vc-num">+1</div>
+          <div class="vc-lbl">cliente satisfeito a cada venda</div>
+        </div>
+      </div>
+      <a href="https://wa.me/5567999536788?text=Quero%20saber%20sobre%20o%20próximo%20feirão%20da%20Arsênio%20Veículos" class="btn-yellow rv fb d3" target="_blank" style="display:inline-block">Participar do próximo feirão</a>
+    </div>
+
+    <div class="fg-right rv fr d1">
+      <div class="proof-card">
+        <div class="pc-title">Transparência total</div>
+        <div class="pc-desc">Cada negócio é fechado com todas as informações na mesa. Sem letra miúda, sem surpresa depois.</div>
+        <div class="pc-tag">Nosso compromisso</div>
+      </div>
+      <div class="proof-card">
+        <div class="pc-title">Maior valorização</div>
+        <div class="pc-desc">Damos o melhor valor pela sua troca em Três Lagoas. Seu carro vale mais aqui do que na concorrência.</div>
+        <div class="pc-tag">Diferencial Arsênio</div>
+      </div>
+      <div class="proof-card">
+        <div class="pc-title">Laço vermelho</div>
+        <div class="pc-desc">Cada entrega é um momento. Do vendedor ao cliente, celebramos cada negócio fechado com orgulho.</div>
+        <div class="pc-tag">Tradição da casa</div>
+      </div>
+      <div class="proof-card">
+        <div class="pc-title">Sequência na faixa</div>
+        <div class="pc-desc">No feirão é assim: uma venda atrás da outra. Fila de clientes satisfeitos e negócios na sequência.</div>
+        <div class="pc-tag">Feirão ao vivo</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section class="depos rv fb">
+  <div class="sec-eyebrow rv fb">Clientes que viram o laço vermelho</div>
+  <h2 class="sec-title rv fb d1">QUEM JÁ <span class="yw">ACELEROU</span><br>COM A GENTE.</h2>
+  <div class="depo-track-wrap">
+    <div class="depo-track">
+      <div class="depo-card">
+        <div class="dc-stars">★★★★★</div>
+        <div class="dc-text">"Fui lá trocar meu carro e saí com um modelo bem melhor. Me deram um valor justo e ainda financiaram o restante. Recomendo demais!"</div>
+        <div class="dc-author"><div class="dc-dot"></div><div><div class="dc-name">Marcelo S.</div><div class="dc-veic">Troca + Financiamento</div></div></div>
+      </div>
+      <div class="depo-card">
+        <div class="dc-stars">★★★★★</div>
+        <div class="dc-text">"Comprei no feirão com condição especial. Atendimento incrível, transparência do começo ao fim. Saí com o laço vermelho no carro!"</div>
+        <div class="dc-author"><div class="dc-dot"></div><div><div class="dc-name">Ana C.</div><div class="dc-veic">Feirão Arsênio</div></div></div>
+      </div>
+      <div class="depo-card">
+        <div class="dc-stars">★★★★★</div>
+        <div class="dc-text">"A valorização do meu carro foi muito além do que eu esperava. Compra mais rápida e mais justa que eu já fiz na vida."</div>
+        <div class="dc-author"><div class="dc-dot"></div><div><div class="dc-name">Roberto L.</div><div class="dc-veic">Venda para Arsênio</div></div></div>
+      </div>
+      <div class="depo-card">
+        <div class="dc-stars">★★★★★</div>
+        <div class="dc-text">"Pensei que não ia conseguir financiar, mas a equipe resolveu tudo. Saí de carro novo no mesmo dia. Inacreditável!"</div>
+        <div class="dc-author"><div class="dc-dot"></div><div><div class="dc-name">Priscila M.</div><div class="dc-veic">Financiamento</div></div></div>
+      </div>
+      <div class="depo-card">
+        <div class="dc-stars">★★★★★</div>
+        <div class="dc-text">"Chorei quando peguei as chaves — e eles estavam lá comemorando junto. Esse é o diferencial: eles realmente se importam."</div>
+        <div class="dc-author"><div class="dc-dot"></div><div><div class="dc-name">Fernanda R.</div><div class="dc-veic">Compra no feirão</div></div></div>
+      </div>
+      <!-- dup -->
+      <div class="depo-card"><div class="dc-stars">★★★★★</div><div class="dc-text">"Fui lá trocar meu carro e saí com um modelo bem melhor. Me deram um valor justo e ainda financiaram o restante. Recomendo demais!"</div><div class="dc-author"><div class="dc-dot"></div><div><div class="dc-name">Marcelo S.</div><div class="dc-veic">Troca + Financiamento</div></div></div></div>
+      <div class="depo-card"><div class="dc-stars">★★★★★</div><div class="dc-text">"Comprei no feirão com condição especial. Atendimento incrível, transparência do começo ao fim. Saí com o laço vermelho no carro!"</div><div class="dc-author"><div class="dc-dot"></div><div><div class="dc-name">Ana C.</div><div class="dc-veic">Feirão Arsênio</div></div></div></div>
+      <div class="depo-card"><div class="dc-stars">★★★★★</div><div class="dc-text">"A valorização do meu carro foi muito além do que eu esperava. Compra mais rápida e mais justa que eu já fiz na vida."</div><div class="dc-author"><div class="dc-dot"></div><div><div class="dc-name">Roberto L.</div><div class="dc-veic">Venda para Arsênio</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-final rv fb">
+  <div class="cta-bg-w">ARSÊNIO</div>
+  <div class="cta-inner">
+    <div class="cta-tag">Seu próximo negócio</div>
+    <h2 class="cta-title">ACELERE<br>AGORA.</h2>
+    <p class="cta-sub">Fale com a equipe Arsênio agora mesmo. Estamos prontos para comprar, vender, trocar ou financiar o seu próximo veículo — com transparência e o melhor valor.</p>
+    <div class="cta-btns">
+      <a href="https://wa.me/5567999536788?text=Olá!%20Vim%20do%20site%20da%20Arsênio%20Veículos%20e%20quero%20acelerar%20no%20caminho%20dos%20meus%20sonhos!" class="btn-black" target="_blank">Falar no WhatsApp →</a>
+      <a href="tel:5567999536788" class="btn-blk-ghost">(67) 99953-6788</a>
+    </div>
+    <div class="cta-address">
+      <strong>Arsênio Veículos</strong> · Três Lagoas, Mato Grosso do Sul<br>
+      @arsenioveiculos · linktr.ee/arsenioveiculos
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fl">ARSÊNIO <span class="yw">VEÍCULOS</span></div>
+  <div class="fc">Compra segura e com transparência · Três Lagoas, MS</div>
+  <div class="flinks">
+    <a href="https://wa.me/5567999536788" target="_blank">WhatsApp</a>
+    <a href="https://instagram.com/arsenioveiculos" target="_blank">Instagram</a>
+    <a href="https://linktr.ee/arsenioveiculos" target="_blank">Linktree</a>
+  </div>
+</footer>
+
+<script>
+/* Cursor */
+const cur = document.getElementById('cur');
+const ring = document.getElementById('cur-ring');
+let rx=0,ry=0,mx=-100,my=-100;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+(function loop(){
+  rx+=(mx-rx)*.13; ry+=(my-ry)*.13;
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(loop);
+})();
+document.querySelectorAll('a,button,.sc-opt,.srv-item,.proof-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+});
+
+/* Scroll reveal */
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('v'); obs.unobserve(e.target); } });
+},{threshold:.1,rootMargin:'0px 0px -30px 0px'});
+document.querySelectorAll('.rv').forEach(el=>obs.observe(el));
+
+/* ═══ SIMULADOR DE TROCA ═══ */
+const sel = { cat: null, ano: null, estado: null };
+
+// Estimativas por combinação cat + ano + estado
+const db = {
+  // hatch
+  'hatch-ate2018-otimo':    { title:'Hatch Seminovo em Boas Condições', desc:'Veículo com boa aceitação no mercado, cotação estável. Valor interessante na troca.', range:'R$20k–R$40k', ico:'🚗' },
+  'hatch-ate2018-bom':      { title:'Hatch c/ Pequenos Reparos', desc:'Ainda tem bom valor. Realizamos revisão e repassamos o melhor preço possível.', range:'R$15k–R$32k', ico:'🚗' },
+  'hatch-ate2018-regular':  { title:'Hatch para Revisão', desc:'Avaliamos o custo de reparo e garantimos a melhor oferta mesmo assim.', range:'R$10k–R$22k', ico:'🚗' },
+  'hatch-2019a2021-otimo':  { title:'Hatch 2019–2021 Impecável', desc:'Ótima faixa de valorização. Alta demanda no mercado, você sai muito bem na troca.', range:'R$35k–R$60k', ico:'🚗' },
+  'hatch-2019a2021-bom':    { title:'Hatch 2019–2021 em Boas Condições', desc:'Valor consistente. Ótima oportunidade para trocar por um modelo mais novo.', range:'R$28k–R$50k', ico:'🚗' },
+  'hatch-2019a2021-regular':{ title:'Hatch 2019–2021 Regular', desc:'Ainda válido para troca. Conversamos e encontramos o melhor negócio pra você.', range:'R$22k–R$40k', ico:'🚗' },
+  'hatch-2022a2023-otimo':  { title:'Hatch Recente — Alta Valorização', desc:'Veículo jovem e bem conservado. Um dos melhores perfis para troca com grande vantagem.', range:'R$55k–R$85k', ico:'🚗' },
+  'hatch-2022a2023-bom':    { title:'Hatch 2022–2023 Conservado', desc:'Excelente relação. Você pode sair com um modelo top na troca com mínimo a pagar.', range:'R$48k–R$75k', ico:'🚗' },
+  'hatch-2022a2023-regular':{ title:'Hatch 2022–2023', desc:'Mesmo com ajustes, o valor é atrativo. Venha avaliar pessoalmente.', range:'R$40k–R$65k', ico:'🚗' },
+  'hatch-2024mais-otimo':   { title:'Hatch Zero / Semi-Novo 2024', desc:'Máxima valorização possível. Você vai se surpreender com o quanto vai receber.', range:'R$75k–R$110k', ico:'🚗' },
+  'hatch-2024mais-bom':     { title:'Hatch 2024+ em Bom Estado', desc:'Altíssima demanda por esse perfil. Negocie agora e leve o carro dos sonhos.', range:'R$65k–R$95k', ico:'🚗' },
+  'hatch-2024mais-regular': { title:'Hatch 2024+ — Avalie Conosco', desc:'Mesmo com detalhes, o ano garante boa valorização. Venha conferir.', range:'R$55k–R$80k', ico:'🚗' },
+  // suv
+  'suv-ate2018-otimo':     { title:'SUV Seminovo Conservado', desc:'SUVs têm alta demanda. Mesmo os mais antigos têm boa aceitação na troca.', range:'R$30k–R$60k', ico:'🚙' },
+  'suv-ate2018-bom':       { title:'SUV com Uso Normal', desc:'Valor justo garantido. Venha e saia com um SUV mais moderno no negócio.', range:'R$22k–R$48k', ico:'🚙' },
+  'suv-ate2018-regular':   { title:'SUV para Revisão', desc:'Analisamos o custo x valor e garantimos a proposta mais honesta do mercado.', range:'R$16k–R$35k', ico:'🚙' },
+  'suv-2019a2021-otimo':   { title:'SUV 2019–2021 Excelente', desc:'Perfil muito procurado. Alta liquidez e boa margem na troca. Oportunidade real.', range:'R$50k–R$90k', ico:'🚙' },
+  'suv-2019a2021-bom':     { title:'SUV 2019–2021 Conservado', desc:'Boa oferta de troca garantida. Venha negociar e sair com um modelo superior.', range:'R$42k–R$78k', ico:'🚙' },
+  'suv-2019a2021-regular': { title:'SUV 2019–2021', desc:'Avaliamos e damos o melhor valor mesmo com pendências. Transparência total.', range:'R$32k–R$62k', ico:'🚙' },
+  'suv-2022a2023-otimo':   { title:'SUV Recente — Máxima Valorização', desc:'Um dos perfis mais valorizados no mercado atual. Troca extremamente vantajosa.', range:'R$75k–R$120k', ico:'🚙' },
+  'suv-2022a2023-bom':     { title:'SUV 2022–2023 em Bom Estado', desc:'Excelente oportunidade de upgrade com mínimo a complementar.', range:'R$65k–R$105k', ico:'🚙' },
+  'suv-2022a2023-regular': { title:'SUV 2022–2023', desc:'Mesmo com ajustes, é um dos carros mais valorizados na nossa avaliação.', range:'R$55k–R$88k', ico:'🚙' },
+  'suv-2024mais-otimo':    { title:'SUV 2024+ Impecável', desc:'Valorização máxima. Você sai no lucro na negociação — sem dúvida o melhor perfil.', range:'R$95k–R$150k', ico:'🚙' },
+  'suv-2024mais-bom':      { title:'SUV 2024+ Conservado', desc:'Valor altíssimo garantido. Venha agora para não perder essa janela.', range:'R$82k–R$130k', ico:'🚙' },
+  'suv-2024mais-regular':  { title:'SUV 2024+ — Avalie Conosco', desc:'Mesmo com detalhes, o valor é excelente. Não deixe passar.', range:'R$70k–R$110k', ico:'🚙' },
+  // pickup
+  'pickup-ate2018-otimo':  { title:'Picape Seminova Conservada', desc:'Picapes têm valorização consistente. Ótima oportunidade de troca por um modelo mais novo.', range:'R$35k–R$65k', ico:'🛻' },
+  'pickup-2019a2021-otimo':{ title:'Picape 2019–2021 Excelente', desc:'Alta liquidez, mercado aquecido. Você sai com muito na troca.', range:'R$55k–R$95k', ico:'🛻' },
+  'pickup-2022a2023-otimo':{ title:'Picape Recente — Alta Valorização', desc:'Mercado ótimo para picapes. Troca bastante vantajosa no momento.', range:'R$80k–R$130k', ico:'🛻' },
+  'pickup-2024mais-otimo': { title:'Picape 2024+ Impecável', desc:'Máxima valorização em picapes. Você vai se surpreender com a oferta.', range:'R$110k–R$175k', ico:'🛻' },
+  // moto
+  'moto-ate2018-otimo':    { title:'Moto Seminova Conservada', desc:'Motos também têm boa aceitação. Avaliamos e damos o melhor valor na troca.', range:'R$6k–R$18k', ico:'🏍️' },
+  'moto-2019a2021-otimo':  { title:'Moto 2019–2021 em Dia', desc:'Boa faixa de valorização para motos. Venha negociar.', range:'R$10k–R$28k', ico:'🏍️' },
+  'moto-2022a2023-otimo':  { title:'Moto Recente Conservada', desc:'Alta demanda por motos recentes. Excelente valorização na troca.', range:'R$18k–R$42k', ico:'🏍️' },
+  'moto-2024mais-otimo':   { title:'Moto 2024+ Impecável', desc:'Máxima valorização. Venha agora e faça o melhor negócio.', range:'R$25k–R$55k', ico:'🏍️' },
+};
+
+document.querySelectorAll('.sc-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    const step = opt.closest('[data-step]').dataset.step;
+    opt.closest('[data-step]').querySelectorAll('.sc-opt').forEach(o=>o.classList.remove('sel'));
+    opt.classList.add('sel');
+    sel[step] = opt.dataset.val;
+    updateSim();
+  });
+});
+
+function updateSim(){
+  const { cat, ano, estado } = sel;
+  const empty = document.getElementById('sr-empty');
+  const filled = document.getElementById('sr-filled');
+  if(!cat || !ano) { empty.style.display='block'; filled.classList.remove('show'); return; }
+  const st = estado || 'otimo';
+  const key = `${cat}-${ano}-${st}`;
+  const rec = db[key] || db[`${cat}-${ano}-otimo`] || db[`${cat}-ate2018-otimo`];
+  if(!rec){ empty.style.display='block'; filled.classList.remove('show'); return; }
+  document.getElementById('sr-ico').textContent = rec.ico;
+  document.getElementById('sr-title').textContent = rec.title;
+  document.getElementById('sr-desc').textContent = rec.desc;
+  document.getElementById('sr-range').textContent = rec.range;
+  const msg = encodeURIComponent(`Olá! Vim do site da Arsênio Veículos. Tenho um ${cat} ${ano} em estado ${st||'ótimo'} e quero saber o valor na troca!`);
+  document.getElementById('sr-cta').href = `https://wa.me/5567999536788?text=${msg}`;
+  empty.style.display='none';
+  filled.classList.remove('show');
+  void filled.offsetWidth;
+  filled.classList.add('show');
+}
+</script>
+</body>
+</html>
